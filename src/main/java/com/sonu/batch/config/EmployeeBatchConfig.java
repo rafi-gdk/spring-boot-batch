@@ -4,16 +4,15 @@ import com.sonu.batch.listener.EmployeeBatchJobListener;
 import com.sonu.batch.listener.EmployeeBatchStepListener;
 import com.sonu.batch.model.Employee;
 import com.sonu.batch.repository.EmployeeRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.data.RepositoryItemWriter;
-import org.springframework.batch.item.data.builder.RepositoryItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
@@ -22,21 +21,19 @@ import org.springframework.core.task.TaskExecutor;
 
 @Configuration
 @EnableBatchProcessing
+@AllArgsConstructor
 public class EmployeeBatchConfig {
 
-    @Autowired
     private JobBuilderFactory jobBuilderFactory;
 
-    @Autowired
     private StepBuilderFactory stepBuilderFactory;
 
-    @Autowired
     private EmployeeRepository employeeRepository;
 
     @Bean
     public Job runEmployeeBatchJob() {
 
-        return jobBuilderFactory.get("importEmployees")
+        return jobBuilderFactory.get("runEmployeeBatchJob")
                 .listener(new EmployeeBatchJobListener())
                 .flow(employeeBatchStep())
                 .end()
@@ -46,13 +43,13 @@ public class EmployeeBatchConfig {
     @Bean
     public Step employeeBatchStep() {
 
-        return stepBuilderFactory.get("csv-step")
+        return stepBuilderFactory.get("employeeBatchStep")
                 .listener(new EmployeeBatchStepListener())
-                .<Employee, Employee>chunk(10)
+                .<Employee, Employee>chunk(1000)
                 .reader(employeeBatchFileReader())
                 .processor(employeeBatchFileProcessor())
                 .writer(employeeBatchFileWriter())
-                .taskExecutor(taskExecuter())
+                .taskExecutor(taskExecutor())
                 .build();
     }
 
@@ -84,10 +81,10 @@ public class EmployeeBatchConfig {
         return repositoryItemWriter;
     }
 
-    private TaskExecutor taskExecuter() {
+    private TaskExecutor taskExecutor() {
 
         SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
-        asyncTaskExecutor.setConcurrencyLimit(100);
+        asyncTaskExecutor.setConcurrencyLimit(5);
         return asyncTaskExecutor;
     }
 

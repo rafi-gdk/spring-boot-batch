@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.time.LocalDateTime;
+
 @Configuration
 @EnableScheduling
 public class EmployeeBatchScheduler {
@@ -21,7 +23,8 @@ public class EmployeeBatchScheduler {
 
     @Scheduled(fixedRate = 60000, initialDelay = 60000)
     public void runEmployeeBatch() {
-        JobParameters jobParameters = new JobParametersBuilder().addLong("startAt", System.currentTimeMillis()).toJobParameters();
+
+        JobParameters jobParameters = new JobParametersBuilder().addString("DateTime", String.valueOf(LocalDateTime.now())).toJobParameters();
         try {
             jobLauncher.run(job, jobParameters);
         } catch (Exception e) {

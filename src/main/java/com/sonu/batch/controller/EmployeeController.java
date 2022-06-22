@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 @RestController
 public class EmployeeController {
 
@@ -17,14 +19,15 @@ public class EmployeeController {
     @Autowired
     Job job;
 
-    @GetMapping("/importEmployees")
-    public String importEmployees() {
-        JobParameters jobParameters = new JobParametersBuilder().addLong("startAt", System.currentTimeMillis()).toJobParameters();
+    @GetMapping("/runEmployeeBatchJob")
+    public String runEmployeeBatchJob() {
+
+        JobParameters jobParameters = new JobParametersBuilder().addString("DateTime", String.valueOf(LocalDateTime.now())).toJobParameters();
         try {
             jobLauncher.run(job, jobParameters);
         } catch (Exception e) {
             e.printStackTrace();
-
+            return "Job Execution  Failed";
         }
         return "Job Executed Successfully";
     }
