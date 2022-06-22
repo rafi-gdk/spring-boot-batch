@@ -8,13 +8,13 @@ public class EmployeeBatchJobListener extends JobExecutionListenerSupport {
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        System.out.println("BATCH JOB STARTED SUCCESSFULLY");
+        System.out.println("EMPLOYEE BATCH JOB STARTED...");
     }
 
     @Override
     public void afterJob(JobExecution jobExecution) {
         if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-            System.out.println("BATCH JOB COMPLETED SUCCESSFULLY");
+            System.out.println("EMPLOYEE BATCH JOB COMPLETED...");
         }
     }
 
