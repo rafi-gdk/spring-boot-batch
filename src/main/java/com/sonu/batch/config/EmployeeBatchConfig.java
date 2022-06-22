@@ -78,10 +78,10 @@ public class EmployeeBatchConfig {
     @Bean
     public RepositoryItemWriter<Employee> employeeBatchFileWriter() {
 
-        return new RepositoryItemWriterBuilder<Employee>()
-                .repository(new RepositoryItemWriterBuilder.RepositoryMethodReference<Employee>(employeeRepository))
-                .methodName("save")
-                .build();
+        RepositoryItemWriter<Employee> repositoryItemWriter = new RepositoryItemWriter<>();
+        repositoryItemWriter.setRepository(employeeRepository);
+        repositoryItemWriter.setMethodName("save");
+        return repositoryItemWriter;
     }
 
     private TaskExecutor taskExecuter() {
